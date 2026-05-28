@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptPay QR</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --bg: #f2f5f3;
+    --surface: #ffffff;
+    --surface2: #f7faf8;
+    --border: rgba(0,0,0,0.09);
+    --border-md: rgba(0,0,0,0.15);
+    --text: #1a1c1a;
+    --text-sub: #5a6460;
+    --text-hint: #9baca5;
+    --red: #c0392b;
+    --radius: 14px;
+    --radius-sm: 9px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111714;
+      --surface: #1a211d;
+      --surface2: #222a25;
+      --border: rgba(255,255,255,0.08);
+      --border-md: rgba(255,255,255,0.15);
+      --text: #e8eee9;
+      --text-sub: #8fa898;
+      --text-hint: #5a7065;
+      --green-light: #0a2e20;
+    }
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Thai', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .app { width: 100%; max-width: 400px; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-bottom: 5px;
+  }
+  .brand-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .brand-name {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-hint);
+  }
+  .header h1 {
+    font-size: 21px; font-weight: 700;
+    color: var(--text); letter-spacing: -0.4px;
+    margin-bottom: 3px;
+  }
+  .header p { font-size: 13px; color: var(--text-hint); }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 0.875rem;
+  }
+
+  label {
+    display: block;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 6px; margin-top: 14px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  select, input {
+    width: 100%;
+    padding: 10px 13px;
+    border: 0.5px solid var(--border-md);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239baca5' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+  input:focus, select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+  }
+  input::placeholder { color: var(--text-hint); }
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { background: var(--green-dark); transform: scale(0.98); }
+
+  .btn-outline {
+    background: none;
+    border: 0.5px solid var(--border-md);
+    color: var(--text-sub);
+    margin-top: 10px;
+    font-weight: 500;
+  }
+  .btn-outline:active { background: var(--surface2); transform: scale(0.98); }
+
+  .err {
+    font-size: 13px; color: var(--red);
+    margin-top: 8px; display: none;
+    padding: 8px 10px;
+    background: rgba(192,57,43,0.07);
+    border-radius: var(--radius-sm);
+  }
+
+  .qr-section { text-align: center; padding: 0.75rem 0 0.5rem; }
+  .qr-hint { font-size: 12px; color: var(--text-hint); margin-bottom: 4px; }
+  .qr-amount { font-size: 30px; font-weight: 700; letter-spacing: -1px; margin: 6px 0 2px; }
+  .qr-acct { font-size: 13px; color: var(--text-hint); margin-bottom: 18px; }
+
+  .qr-frame-wrap {
+    position: relative; display: inline-block;
+  }
+  .qr-frame {
+    display: block;
+    background: white;
+    border: 1.5px solid var(--border-md);
+    border-radius: 13px;
+    padding: 13px;
+  }
+  .qr-logo {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--green);
+    border: 3px solid white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qr-logo-dot {
+    width: 13px; height: 13px;
+    border-radius: 3px; background: white;
+  }
+
+  .divider { height: 0.5px; background: var(--border); margin: 14px 0; }
+
+  .meta-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; margin-bottom: 5px;
+  }
+  .meta-label { color: var(--text-hint); }
+  .meta-val { color: var(--text); font-weight: 600; font-family: monospace; }
+
+  .payload {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 10.5px; font-family: monospace;
+    color: var(--text-sub);
+    word-break: break-all; line-height: 1.7;
+    margin-top: 8px;
+    border: 0.5px solid var(--border);
+  }
+
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; padding: 4px 10px;
+    border-radius: 20px; margin-bottom: 14px; margin-right: 5px;
+    font-weight: 500;
+  }
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="app">
+
+    <div class="header">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <span class="brand-name">PromptPay</span>
+      </div>
+      <h1>QR Generator</h1>
+      <p>สร้าง QR สแกนจ่ายผ่านแอปธนาคารได้เลย</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">✓ EMV QR มาตรฐานแบงค์ชาติ</span>
+
+      <label>ประเภท</label>
+      <select id="sel" onchange="onTypeChange()">
+        <option value="phone">เบอร์โทรศัพท์</option>
+        <option value="natid">เลขบัตรประชาชน (13 หลัก)</option>
+        <option value="taxid">เลขนิติบุคคล (13 หลัก)</option>
+      </select>
+
+      <label id="lbl">เบอร์โทรศัพท์</label>
+      <input id="acc" type="tel" inputmode="numeric" placeholder="0812345678" maxlength="10" oninput="clearOut()">
+
+      <label>จำนวนเงิน (บาท)</label>
+      <input id="amt" type="number" inputmode="decimal" placeholder="เว้นว่าง = ให้ผู้โอนกรอกเอง" min="0.01" step="0.01" oninput="clearOut()">
+
+      <div class="err" id="err"></div>
+
+      <button class="btn" onclick="generate()">
+        &#9639; สร้าง QR PromptPay
+      </button>
+    </div>
+
+    <div class="card hidden" id="out">
+      <div class="qr-section">
+        <div class="qr-hint">สแกนด้วยแอปธนาคารไทย</div>
+        <div class="qr-amount" id="dispAmt"></div>
+        <div class="qr-acct" id="dispAcc"></div>
+        <div class="qr-frame-wrap">
+          <canvas class="qr-frame" id="qrc" width="220" height="220"></canvas>
+          <div class="qr-logo"><div class="qr-logo-dot"></div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="meta-row">
+        <span class="meta-label">CRC-16 checksum</span>
+        <span class="meta-val" id="crcVal"></span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">payload length</span>
+        <span class="meta-val" id="lenVal"></span>
+      </div>
+      <div class="payload" id="payloadBox"></div>
+
+      <button class="btn btn-outline" onclick="dl()">
+        ↓ บันทึกรูป QR Code
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function $(id){ return document.getElementById(id); }
+
+function onTypeChange(){
+  clearOut();
+  const t = $('sel').value;
+  if(t === 'phone'){
+    $('lbl').textContent = 'เบอร์โทรศัพท์';
+    $('acc').placeholder = '0812345678';
+    $('acc').maxLength = 10;
+    $('acc').inputMode = 'numeric';
+  } else {
+    $('lbl').textContent = 'เลขประจำตัว 13 หลัก';
+    $('acc').placeholder = '1234567890123';
+    $('acc').maxLength = 13;
+    $('acc').inputMode = 'numeric';
+  }
+}
+
+function clearOut(){
+  $('out').classList.add('hidden');
+  $('err').style.display = 'none';
+}
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function tlv(tag, val){
+  return tag + pad2(val.length) + val;
+}
+
+function crc16(str){
+  let c = 0xFFFF;
+  for(let i = 0; i < str.length; i++){
+    c ^= str.charCodeAt(i) << 8;
+    for(let j = 0; j < 8; j++)
+      c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1);
+  }
+  return (c & 0xFFFF).toString(16).toUpperCase().padStart(4,'0');
+}
+
+function buildPayload(type, raw, amount){
+  if(type === 'phone'){
+    let p = raw.replace(/\D/g,'');
+    if(p.length !== 10 || !p.startsWith('0'))
+      return { err: 'เบอร์โทรต้องเป็น 10 หลัก และขึ้นต้นด้วย 0' };
+    const target = '0066' + p.slice(1);
+    const inner = tlv('00','A000000677010111') + tlv('01', target);
+    let pl = tlv('00','01') + tlv('01','11') + tlv('29', inner)
+           + tlv('52','0000') + tlv('53','764');
+    if(amount && parseFloat(amount) > 0)
+      pl += tlv('54', parseFloat(amount).toFixed(2));
+    pl += tlv('58','TH') + tlv('59','PromptPay') + tlv('60','Bangkok') + '6304';
+    const checksum = crc16(pl);
+    return { payload: pl + checksum, crc: checksum };
+
+  } else {
+    let id = raw.replace(/\D/g,'');
+    if(id.length !== 13)
+      return { err: 'ต้องเป็น 13 หลักพอดี' };
+    const inner = tlv('00','A000000677010111') + tlv('02', id);
+    let pl = tlv('00','01') + tlv('01','11') + tlv('29', inner)
+           + tlv('52','0000') + tlv('53','764');
+    if(amount && parseFloat(amount) > 0)
+      pl += tlv('54', parseFloat(amount).toFixed(2));
+    pl += tlv('58','TH') + tlv('59','PromptPay') + tlv('60','Bangkok') + '6304';
+    const checksum = crc16(pl);
+    return { payload: pl + checksum, crc: checksum };
+  }
+}
+
+async function generate(){
+  const type = $('sel').value;
+  const raw  = $('acc').value.trim();
+  const amt  = $('amt').value.trim();
+
+  if(!raw){ showErr('กรุณากรอกข้อมูลผู้รับเงิน'); return; }
+
+  const r = buildPayload(type, raw, amt);
+  if(r.err){ showErr(r.err); return; }
+
+  $('dispAmt').textContent = amt && parseFloat(amt) > 0
+    ? '฿' + parseFloat(amt).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2})
+    : 'ไม่ระบุยอด';
+
+  let display = raw;
+  if(type === 'phone')
+    display = raw.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');
+  else
+    display = raw.replace(/(\d{1})(\d{4})(\d{5})(\d{2})(\d{1})/,'$1-$2-$3-$4-$5');
+  $('dispAcc').textContent = display;
+
+  $('crcVal').textContent  = r.crc;
+  $('lenVal').textContent  = r.payload.length + ' chars';
+  $('payloadBox').textContent = r.payload;
+
+  try {
+    await QRCode.toCanvas($('qrc'), r.payload, {
+      width: 220, margin: 1,
+      errorCorrectionLevel: 'M',
+      color: { dark:'#000000', light:'#ffffff' }
+    });
+    $('out').classList.remove('hidden');
+    $('out').scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch(e){
+    showErr('สร้าง QR ไม่สำเร็จ: ' + e.message);
+  }
+}
+
+function showErr(msg){
+  const el = $('err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function dl(){
+  const canvas = $('qrc');
+  const a = document.createElement('a');
+  a.download = 'promptpay-qr.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+</script>
+</body>
+</html>
