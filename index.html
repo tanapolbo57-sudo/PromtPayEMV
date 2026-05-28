@@ -2,335 +2,432 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>PromptPay QR</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --green:#1D9E75;--green-d:#0F6E56;--green-l:#E1F5EE;--green-ll:#f0faf6;
-  --bg:#f0f4f2;--surf:#fff;--surf2:#f7faf8;
-  --bdr:rgba(0,0,0,0.08);--bdr-m:rgba(0,0,0,0.13);
-  --txt:#181c1a;--txt2:#5a6660;--txt3:#9baca5;
-  --red:#c0392b;--red-l:#fdf0ef;
-  --r:16px;--r-sm:10px;--r-xs:7px;
-}
-@media(prefers-color-scheme:dark){:root{
-  --bg:#0f1410;--surf:#182019;--surf2:#1e2820;
-  --bdr:rgba(255,255,255,0.07);--bdr-m:rgba(255,255,255,0.13);
-  --txt:#e6ede8;--txt2:#8aa898;--txt3:#567060;
-  --green-l:#0b2e1e;--green-ll:#0d2419;--red-l:#2a1210;
-}}
-html,body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Thai',sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased;}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Layout ── */
-.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 4rem;}
-.app{width:100%;max-width:390px;}
+:root {
+  --green: #1D9E75;
+  --green-d: #0d7a5a;
+  --white: #ffffff;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: 'Prompt', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Animated gradient background ── */
+body {
+  background: #0a1628;
+  position: relative;
+}
+
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Mesh gradient blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: drift linear infinite;
+}
+.blob-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #1a6b8a 0%, transparent 70%);
+  top: -150px; left: -100px;
+  animation-duration: 22s;
+  animation-delay: 0s;
+}
+.blob-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #1D9E75 0%, transparent 70%);
+  top: 10%; right: -80px;
+  animation-duration: 18s;
+  animation-delay: -6s;
+}
+.blob-3 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, #2d1b69 0%, transparent 70%);
+  bottom: -200px; left: 20%;
+  animation-duration: 25s;
+  animation-delay: -12s;
+}
+.blob-4 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #0e4d6b 0%, transparent 70%);
+  bottom: 10%; right: 10%;
+  animation-duration: 20s;
+  animation-delay: -4s;
+}
+.blob-5 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, #1a3a5c 0%, transparent 70%);
+  top: 40%; left: 40%;
+  animation-duration: 28s;
+  animation-delay: -9s;
+}
+
+@keyframes drift {
+  0%   { transform: translate(0px, 0px) scale(1); }
+  25%  { transform: translate(40px, -30px) scale(1.05); }
+  50%  { transform: translate(-20px, 50px) scale(0.97); }
+  75%  { transform: translate(-40px, -20px) scale(1.03); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+/* Noise texture overlay */
+.bg-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Grid lines */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* ── Page layout ── */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
 
 /* ── Header ── */
-.hdr{text-align:center;margin-bottom:1.75rem;padding-top:.5rem;}
-.hdr-brand{display:inline-flex;align-items:center;gap:7px;margin-bottom:6px;}
-.hdr-dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
-.hdr-tag{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--txt3);}
-.hdr h1{font-size:24px;font-weight:700;letter-spacing:-.5px;color:var(--txt);margin-bottom:4px;}
-.hdr p{font-size:13px;color:var(--txt3);}
-
-/* ── Card ── */
-.card{background:var(--surf);border:0.5px solid var(--bdr);border-radius:var(--r);padding:1.5rem;margin-bottom:.875rem;}
-
-/* ── Form ── */
-.f-group{margin-bottom:1.1rem;}
-.f-group:last-of-type{margin-bottom:0;}
-.f-label{display:block;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--txt3);margin-bottom:7px;}
-select,input{
-  width:100%;padding:11px 14px;
-  border:0.5px solid var(--bdr-m);border-radius:var(--r-sm);
-  background:var(--surf);color:var(--txt);font-size:15px;font-family:inherit;
-  outline:none;-webkit-appearance:none;appearance:none;
-  transition:border-color .15s,box-shadow .15s;
+.header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239baca5' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:38px;cursor:pointer;}
-input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(29,158,117,.1);}
-input::placeholder{color:var(--txt3);}
-input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 
-/* Amount input special */
-.amt-wrap{position:relative;}
-.amt-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:600;color:var(--txt2);pointer-events:none;}
-.amt-wrap input{padding-left:30px;font-size:17px;font-weight:600;}
-
-/* ── Buttons ── */
-.btn{
-  width:100%;padding:14px;border:none;border-radius:var(--r-sm);
-  font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .15s;-webkit-tap-highlight-color:transparent;
+.header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 14px;
+  font-family: 'DM Sans', sans-serif;
 }
-.btn-primary{background:var(--green);color:#fff;margin-top:1.25rem;}
-.btn-primary:active{background:var(--green-d);transform:scale(.98);}
-.btn-ghost{background:none;border:0.5px solid var(--bdr-m);color:var(--txt2);margin-top:.75rem;font-size:14px;font-weight:500;}
-.btn-ghost:active{background:var(--surf2);}
-
-/* ── Error ── */
-.err{display:none;font-size:13px;color:var(--red);background:var(--red-l);border-radius:var(--r-xs);padding:9px 12px;margin-top:10px;line-height:1.5;}
-
-/* ── QR Screen ── */
-.qr-card{text-align:center;}
-.qr-top{padding:.5rem 0 1.25rem;}
-.qr-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:10px;}
-.qr-amount{font-size:36px;font-weight:700;letter-spacing:-1.5px;color:var(--txt);line-height:1.1;}
-.qr-amount span{font-size:20px;font-weight:600;margin-right:2px;vertical-align:.15em;}
-.qr-acct{font-size:13px;color:var(--txt3);margin-top:5px;}
-
-.qr-frame-outer{display:inline-flex;align-items:center;justify-content:center;margin:1.25rem 0 .75rem;position:relative;}
-.qr-border{padding:14px;background:#fff;border-radius:18px;border:1.5px solid var(--bdr-m);display:block;}
-.qr-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:9px;background:var(--green);border:3px solid #fff;display:flex;align-items:center;justify-content:center;}
-.qr-logo-inner{width:14px;height:14px;border-radius:3px;background:#fff;}
-
-.qr-banks{font-size:11px;color:var(--txt3);margin-bottom:0;}
-
-/* ── Recipient pill ── */
-.recip{display:inline-flex;align-items:center;gap:7px;background:var(--green-ll);border:0.5px solid rgba(29,158,117,.2);border-radius:30px;padding:6px 12px 6px 8px;margin-bottom:1rem;}
-.recip-avatar{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.recip-text{font-size:13px;font-weight:500;color:var(--green-d);}
-
-/* ── Divider ── */
-.divider{height:.5px;background:var(--bdr);margin:1rem 0;}
-
-/* ── Summary row ── */
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:13px;}
-.sum-label{color:var(--txt3);}
-.sum-val{color:var(--txt);font-weight:500;}
-
-/* ── Success overlay ── */
-.overlay{
-  display:none;position:fixed;inset:0;z-index:100;
-  background:rgba(0,0,0,.45);
-  align-items:center;justify-content:center;padding:1rem;
+.eyebrow-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
 }
-.overlay.show{display:flex;}
-.modal{
-  background:var(--surf);border-radius:24px;width:100%;max-width:340px;
-  padding:2rem 1.5rem 1.5rem;text-align:center;
-  animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both;
+
+.header h1 {
+  font-size: clamp(2.4rem, 6vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 10px;
 }
-@keyframes popIn{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
-.modal-icon{width:72px;height:72px;border-radius:50%;background:var(--green-l);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
-.modal-check{width:36px;height:36px;}
-.modal-title{font-size:22px;font-weight:700;color:var(--txt);letter-spacing:-.4px;margin-bottom:4px;}
-.modal-amt{font-size:32px;font-weight:700;color:var(--green);letter-spacing:-1px;margin:8px 0 4px;}
-.modal-sub{font-size:13px;color:var(--txt3);margin-bottom:1.25rem;}
-.modal-detail{background:var(--surf2);border-radius:var(--r-xs);padding:10px 14px;text-align:left;margin-bottom:1.25rem;}
-.modal-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
-.modal-rl{color:var(--txt3);}
-.modal-rv{color:var(--txt);font-weight:500;}
-.btn-close{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:var(--r-sm);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;}
-.btn-close:active{background:var(--green-d);}
 
-.hidden{display:none!important;}
+.header h1 .accent {
+  background: linear-gradient(135deg, #4dd9a8 0%, #1D9E75 50%, #0d7a5a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-/* ── Scan hint animation ── */
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.scanning{font-size:12px;color:var(--txt3);animation:pulse 1.8s ease-in-out infinite;}
+.header p {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.2px;
+}
+
+/* ── Icon grid ── */
+.icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  max-width: 520px;
+}
+
+/* ── App icon ── */
+.app-icon-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.app-icon-wrap:nth-child(1) { animation-delay: 0.1s; }
+.app-icon-wrap:nth-child(2) { animation-delay: 0.17s; }
+.app-icon-wrap:nth-child(3) { animation-delay: 0.24s; }
+.app-icon-wrap:nth-child(4) { animation-delay: 0.31s; }
+.app-icon-wrap:nth-child(5) { animation-delay: 0.38s; }
+.app-icon-wrap:nth-child(6) { animation-delay: 0.45s; }
+
+.app-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 22px; /* macOS icon rounding ratio */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+
+  /* Glass effect */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.app-icon:hover {
+  transform: scale(1.12) translateY(-4px);
+}
+
+.app-icon:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/* Shine overlay on hover */
+.app-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.app-icon:hover::before { opacity: 1; }
+
+/* Inner border glow */
+.app-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+.app-name {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.2px;
+  text-align: center;
+  font-family: 'Prompt', sans-serif;
+}
+
+/* ── Individual icon colors ── */
+
+/* PromptPay — green gradient */
+.icon-promptpay {
+  background: linear-gradient(145deg, #1fc98a 0%, #0d8f5f 50%, #085e40 100%);
+  box-shadow:
+    0 8px 32px rgba(29,158,117,0.45),
+    0 2px 8px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* Placeholder icons — styled but dimmed */
+.icon-placeholder {
+  background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  border: 1px dashed rgba(255,255,255,0.12) !important;
+  cursor: default;
+}
+.icon-placeholder::before { display: none; }
+.icon-placeholder:hover { transform: none; }
+.icon-placeholder .icon-svg { opacity: 0.25; }
+
+/* Icon SVGs */
+.icon-svg {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+/* ── Tooltip "coming soon" ── */
+.app-icon-wrap.coming .app-name {
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+}
+
+/* ── Footer ── */
+.footer {
+  margin-top: 4rem;
+  font-size: 11px;
+  color: rgba(255,255,255,0.18);
+  letter-spacing: 0.5px;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .icon-grid { gap: 20px; max-width: 340px; }
+  .app-icon { width: 76px; height: 76px; border-radius: 19px; }
+  .icon-svg { width: 38px; height: 38px; }
+  .header { margin-bottom: 2.5rem; }
+}
 </style>
 </head>
 <body>
+
+<!-- Background -->
+<div class="bg-canvas">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="blob blob-5"></div>
+</div>
+<div class="bg-grid"></div>
+
 <div class="page">
-<div class="app">
 
   <!-- Header -->
-  <div class="hdr">
-    <div class="hdr-brand">
-      <div class="hdr-dot"></div>
-      <span class="hdr-tag">PromptPay</span>
+  <div class="header">
+    <div class="header-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Developer
+      <span class="eyebrow-dot"></span>
     </div>
-    <h1>รับชำระเงิน</h1>
-    <p>สแกนจ่ายผ่านแอปธนาคารไทยทุกเจ้า</p>
+    <h1>DoubleP<br><span class="accent"></span></h1>
+    <p>เลือกบริการที่ต้องการใช้งาน</p>
   </div>
 
-  <!-- Form card -->
-  <div class="card" id="formCard">
-    <div class="f-group">
-      <label class="f-label">ช่องทาง PromptPay</label>
-      <select id="sel" onchange="onTypeChange()">
-        <option value="phone">📱  เบอร์โทรศัพท์</option>
-        <option value="natid">🪪  เลขบัตรประชาชน</option>
-        <option value="taxid">🏢  เลขนิติบุคคล</option>
-      </select>
+  <!-- App icons -->
+  <div class="icon-grid">
+
+    <!-- 1. PromptPay — active -->
+    <div class="app-icon-wrap">
+      <a class="app-icon icon-promptpay" href="Payment.html">
+        <!-- QR + PromptPay icon -->
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- QR corners -->
+          <rect x="6" y="6" width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
+          <rect x="9.5" y="9.5" width="6" height="6" rx="1" fill="white"/>
+          <rect x="25" y="6" width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
+          <rect x="28.5" y="9.5" width="6" height="6" rx="1" fill="white"/>
+          <rect x="6" y="25" width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
+          <rect x="9.5" y="28.5" width="6" height="6" rx="1" fill="white"/>
+          <!-- QR dots bottom-right -->
+          <rect x="25" y="25" width="3" height="3" rx=".6" fill="white"/>
+          <rect x="30" y="25" width="3" height="3" rx=".6" fill="white"/>
+          <rect x="35" y="25" width="3" height="3" rx=".6" fill="white"/>
+          <rect x="25" y="30" width="3" height="3" rx=".6" fill="white"/>
+          <rect x="33" y="30" width="5" height="3" rx=".6" fill="white"/>
+          <rect x="25" y="35" width="5" height="3" rx=".6" fill="white"/>
+          <rect x="33" y="35" width="5" height="3" rx=".6" fill="white"/>
+        </svg>
+      </a>
+      <span class="app-name">PromptPay</span>
     </div>
 
-    <div class="f-group">
-      <label class="f-label" id="lbl">เบอร์โทรศัพท์</label>
-      <input id="acc" type="tel" inputmode="numeric" placeholder="0812345678" maxlength="10" oninput="clearOut()">
-    </div>
-
-    <div class="f-group">
-      <label class="f-label">ยอดเงิน (บาท)</label>
-      <div class="amt-wrap">
-        <span class="amt-prefix">฿</span>
-        <input id="amt" type="number" inputmode="decimal" placeholder="0.00 — เว้นว่างให้ผู้โอนกรอกเอง" min="0.01" step="0.01" oninput="clearOut()">
+    <!-- 2-6. Coming soon slots -->
+    <div class="app-icon-wrap coming">
+      <div class="app-icon icon-placeholder">
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
+          <rect x="10" y="10" width="24" height="18" rx="3" stroke="white" stroke-width="2"/>
+          <path d="M14 32h16M18 28v4M26 28v4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M15 16h4M15 20h10" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        </svg>
       </div>
+      <span class="app-name">coming soon</span>
     </div>
 
-    <div class="err" id="err"></div>
+    <div class="app-icon-wrap coming">
+      <div class="app-icon icon-placeholder">
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
+          <circle cx="22" cy="17" r="6" stroke="white" stroke-width="2"/>
+          <path d="M10 34c0-6.627 5.373-10 12-10s12 3.373 12 10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="app-name">coming soon</span>
+    </div>
 
-    <button class="btn btn-primary" onclick="generate()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><rect x="19" y="14" width="2" height="2"/><rect x="14" y="19" width="2" height="2"/><rect x="18" y="18" width="3" height="3"/></svg>
-      สร้าง QR Code
-    </button>
+    <div class="app-icon-wrap coming">
+      <div class="app-icon icon-placeholder">
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
+          <rect x="9" y="14" width="26" height="18" rx="3" stroke="white" stroke-width="2"/>
+          <path d="M9 19h26" stroke="white" stroke-width="1.8"/>
+          <path d="M14 25h4M14 29h8" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+          <rect x="16" y="9" width="3" height="6" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="25" y="9" width="3" height="6" rx="1.5" fill="white" opacity=".5"/>
+        </svg>
+      </div>
+      <span class="app-name">coming soon</span>
+    </div>
+
+    <div class="app-icon-wrap coming">
+      <div class="app-icon icon-placeholder">
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
+          <path d="M22 8l3.5 7 7.7 1.1-5.6 5.4 1.3 7.7L22 25.7l-6.9 3.5 1.3-7.7-5.6-5.4 7.7-1.1z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="app-name">coming soon</span>
+    </div>
+
+    <div class="app-icon-wrap coming">
+      <div class="app-icon icon-placeholder">
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
+          <circle cx="22" cy="22" r="12" stroke="white" stroke-width="2"/>
+          <path d="M22 15v7l4 4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="22" cy="22" r="1.5" fill="white"/>
+        </svg>
+      </div>
+      <span class="app-name">coming soon</span>
+    </div>
+
   </div>
 
-  <!-- QR card -->
-  <div class="card qr-card hidden" id="qrCard">
-    <div class="qr-top">
-      <div class="qr-label">สแกนเพื่อชำระเงิน</div>
-      <div class="qr-amount"><span>฿</span><span id="dispAmt">—</span></div>
-      <div class="qr-acct" id="dispAcct">—</div>
-    </div>
-
-    <div class="qr-frame-outer">
-      <canvas class="qr-border" id="qrc" width="224" height="224"></canvas>
-      <div class="qr-logo"><div class="qr-logo-inner"></div></div>
-    </div>
-
-    <div class="scanning" id="scanHint">กำลังรอการชำระเงิน…</div>
-
-    <div class="divider"></div>
-
-    <div class="sum-row"><span class="sum-label">ผู้รับเงิน</span><span class="sum-val" id="sumAcct">—</span></div>
-    <div class="sum-row" id="sumAmtRow"><span class="sum-label">ยอดชำระ</span><span class="sum-val" id="sumAmt">—</span></div>
-
-    <div class="divider"></div>
-
-    <button class="btn btn-primary" onclick="confirmPaid()" style="margin-top:0;">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-      ยืนยันได้รับเงินแล้ว
-    </button>
-    <button class="btn btn-ghost" onclick="backToForm()">เปลี่ยนยอด / ยกเลิก</button>
-  </div>
+  <!-- Footer -->
+  <div class="footer">DoublePHub &nbsp;·&nbsp; &nbsp;·&nbsp; v1.0</div>
 
 </div>
-</div>
-
-<!-- Success overlay -->
-<div class="overlay" id="overlay" onclick="closeOverlay(event)">
-  <div class="modal" id="modal">
-    <div class="modal-icon">
-      <svg class="modal-check" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10" stroke="#1D9E75" stroke-width="1.5" opacity=".3"/>
-        <polyline points="7 12.5 10.5 16 17 9"/>
-      </svg>
-    </div>
-    <div class="modal-title">รับเงินสำเร็จ</div>
-    <div class="modal-amt" id="modalAmt">฿0.00</div>
-    <div class="modal-sub" id="modalTime">—</div>
-    <div class="modal-detail">
-      <div class="modal-row"><span class="modal-rl">ผู้รับเงิน</span><span class="modal-rv" id="modalAcct">—</span></div>
-      <div class="modal-row" id="modalAmtRow"><span class="modal-rl">ยอดที่กำหนด</span><span class="modal-rv" id="modalAmtSet">—</span></div>
-    </div>
-    <button class="btn-close" onclick="closeAndReset()">รายการใหม่</button>
-  </div>
-</div>
-
-<script>
-const $=id=>document.getElementById(id);
-
-function onTypeChange(){
-  clearOut();
-  const t=$('sel').value;
-  if(t==='phone'){$('lbl').textContent='เบอร์โทรศัพท์';$('acc').placeholder='0812345678';$('acc').maxLength=10;}
-  else{$('lbl').textContent='เลขประจำตัว 13 หลัก';$('acc').placeholder='1234567890123';$('acc').maxLength=13;}
-}
-
-function clearOut(){$('qrCard').classList.add('hidden');$('err').style.display='none';}
-
-function pad2(n){return String(n).padStart(2,'0');}
-function tlv(tag,val){return tag+pad2(val.length)+val;}
-function crc16(str){
-  let c=0xFFFF;
-  for(let i=0;i<str.length;i++){c^=str.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021):(c<<1);}
-  return(c&0xFFFF).toString(16).toUpperCase().padStart(4,'0');
-}
-
-function buildPayload(type,raw,amount){
-  let inner;
-  if(type==='phone'){
-    const p=raw.replace(/\D/g,'');
-    if(p.length!==10||!p.startsWith('0'))return{err:'เบอร์โทรต้องเป็น 10 หลัก ขึ้นต้นด้วย 0'};
-    inner=tlv('00','A000000677010111')+tlv('01','0066'+p.slice(1));
-  }else{
-    const id=raw.replace(/\D/g,'');
-    if(id.length!==13)return{err:'ต้องเป็น 13 หลักพอดี'};
-    inner=tlv('00','A000000677010111')+tlv('02',id);
-  }
-  let pl=tlv('00','01')+tlv('01','11')+tlv('29',inner)+tlv('52','0000')+tlv('53','764');
-  if(amount&&parseFloat(amount)>0)pl+=tlv('54',parseFloat(amount).toFixed(2));
-  pl+=tlv('58','TH')+tlv('59','PromptPay')+tlv('60','Bangkok')+'6304';
-  const crc=crc16(pl);
-  return{payload:pl+crc};
-}
-
-function fmtPhone(p){return p.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');}
-function fmtId(id){return id.replace(/(\d{1})(\d{4})(\d{5})(\d{2})(\d{1})/,'$1-$2-$3-$4-$5');}
-function fmtMoney(v){return parseFloat(v).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function nowStr(){const d=new Date();return d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น. '+d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});}
-
-let _acc='',_amt='',_type='';
-
-async function generate(){
-  const type=$('sel').value,raw=$('acc').value.trim(),amt=$('amt').value.trim();
-  if(!raw){showErr('กรุณากรอกข้อมูลผู้รับเงิน');return;}
-  const r=buildPayload(type,raw,amt);
-  if(r.err){showErr(r.err);return;}
-
-  _type=type;_acc=raw;_amt=amt;
-  const dispId=type==='phone'?fmtPhone(raw):fmtId(raw);
-
-  $('dispAmt').textContent=amt&&parseFloat(amt)>0?fmtMoney(amt):'—';
-  $('dispAcct').textContent=dispId;
-  $('sumAcct').textContent=dispId;
-  if(amt&&parseFloat(amt)>0){
-    $('sumAmt').textContent='฿'+fmtMoney(amt);
-    $('sumAmtRow').style.display='flex';
-  }else{
-    $('sumAmtRow').style.display='none';
-  }
-
-  try{
-    await QRCode.toCanvas($('qrc'),r.payload,{width:224,margin:1,errorCorrectionLevel:'M',color:{dark:'#000',light:'#fff'}});
-    $('formCard').classList.add('hidden');
-    $('qrCard').classList.remove('hidden');
-    window.scrollTo({top:0,behavior:'smooth'});
-  }catch(e){showErr('สร้าง QR ไม่สำเร็จ: '+e.message);}
-}
-
-function confirmPaid(){
-  const dispId=_type==='phone'?fmtPhone(_acc):fmtId(_acc);
-  $('modalAmt').textContent=_amt&&parseFloat(_amt)>0?'฿'+fmtMoney(_amt):'ไม่ระบุยอด';
-  $('modalAcct').textContent=dispId;
-  $('modalTime').textContent=nowStr();
-  if(_amt&&parseFloat(_amt)>0){$('modalAmtSet').textContent='฿'+fmtMoney(_amt);$('modalAmtRow').style.display='flex';}
-  else $('modalAmtRow').style.display='none';
-  $('overlay').classList.add('show');
-}
-
-function closeOverlay(e){if(e.target===$('overlay'))closeAndReset();}
-
-function closeAndReset(){
-  $('overlay').classList.remove('show');
-  $('qrCard').classList.add('hidden');
-  $('formCard').classList.remove('hidden');
-  $('acc').value='';$('amt').value='';
-  _acc='';_amt='';_type='';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function backToForm(){
-  $('qrCard').classList.add('hidden');
-  $('formCard').classList.remove('hidden');
-}
-
-function showErr(msg){const el=$('err');el.textContent=msg;el.style.display='block';}
-</script>
 </body>
 </html>
