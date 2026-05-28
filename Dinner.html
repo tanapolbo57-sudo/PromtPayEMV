@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>คืนนี้กินอะไร? 🎰</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1a0a2e;
+  --surface: #241340;
+  --surface2: #2e1a50;
+  --accent: #ff6b35;
+  --accent2: #ffd93d;
+  --accent3: #6bcb77;
+  --pink: #ff6b9d;
+  --cyan: #4ecdc4;
+  --text: #fff;
+  --text2: rgba(255,255,255,0.55);
+  --r: 20px;
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: 'Kanit', sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.back-btn{
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 999;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-family: 'Kanit', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: .2s;
+}
+
+.back-btn:active{
+  transform: scale(0.95);
+}
+
+/* ── BG ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,107,53,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(78,205,196,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 50% 50%, rgba(107,203,119,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* floating emoji bg */
+.floaters {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+}
+.floater {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.06;
+  animation: floatUp linear infinite;
+  user-select: none;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.06; }
+  90%  { opacity: 0.06; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── Layout ── */
+.page {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 2rem 1.25rem 3rem;
+  gap: 0;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: dropIn .7s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.header-sub {
+  font-size: 12px; font-weight: 300;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text2); margin-bottom: 8px;
+  font-family: 'Sarabun', sans-serif;
+}
+.header h1 {
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #fff 0%, #ffd93d 50%, #ff6b35 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-emoji { font-size: 2.5rem; display: block; margin-bottom: 6px; animation: bounce 2s ease-in-out infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+/* ── Slot machine card ── */
+.slot-card {
+  width: 100%; max-width: 400px;
+  background: var(--surface);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 20px 60px rgba(0,0,0,0.5),
+    0 0 80px rgba(255,107,53,0.08);
+  animation: dropIn .7s cubic-bezier(0.34,1.56,0.64,1) .1s both;
+  position: relative;
+}
+
+/* top accent bar */
+.slot-card::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink), var(--accent), var(--accent2), var(--accent3), var(--cyan));
+}
+
+/* ── Result display ── */
+.result-area {
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  min-height: 200px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-bg-glow {
+  position: absolute; inset: 0;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity .5s;
+  pointer-events: none;
+}
+
+.result-emoji-big {
+  font-size: 5rem;
+  line-height: 1;
+  display: block;
+  transition: transform .3s cubic-bezier(0.34,1.56,0.64,1);
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+}
+
+.result-name {
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  transition: all .3s ease;
+}
+
+.result-desc {
+  font-size: 13px; font-weight: 300;
+  color: var(--text2);
+  font-family: 'Sarabun', sans-serif;
+  line-height: 1.4;
+}
+
+.result-tags {
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+  margin-top: 4px;
+}
+.tag {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px;
+  font-family: 'Sarabun', sans-serif;
+}
+
+/* idle state */
+.idle-text {
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--text2);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+/* ── Spin animation ── */
+@keyframes spinResult {
+  0%  { transform: translateY(-100%) scale(0.8); opacity: 0; }
+  60% { transform: translateY(8%) scale(1.05); opacity: 1; }
+  100%{ transform: translateY(0) scale(1); opacity: 1; }
+}
+.spinning .result-emoji-big { animation: spinResult .5s cubic-bezier(0.34,1.56,0.64,1) both; }
+.spinning .result-name { animation: spinResult .5s cubic-bezier(0.34,1.56,0.64,1) .05s both; }
+
+/* ── Slot reel effect during spin ── */
+.reel-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .15s;
+}
+.reel-overlay.active { opacity: 1; }
+.reel-item {
+  font-size: 1.8rem; font-weight: 700;
+  animation: reelSpin .08s linear infinite;
+  color: rgba(255,255,255,0.4);
+}
+@keyframes reelSpin {
+  0%  { transform: translateY(-4px); }
+  100%{ transform: translateY(4px); }
+}
+
+/* ── Spin button ── */
+.btn-area { padding: 0 1.5rem 1.5rem; }
+
+.btn-spin {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--accent) 0%, #ff4500 100%);
+  color: white; border: none;
+  border-radius: var(--r);
+  font-size: 1.1rem; font-weight: 800;
+  font-family: 'Kanit', sans-serif;
+  cursor: pointer; letter-spacing: 0.5px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 4px 20px rgba(255,107,53,0.4), 0 1px 0 rgba(255,255,255,0.2) inset;
+  -webkit-tap-highlight-color: transparent;
+  position: relative; overflow: hidden;
+}
+.btn-spin::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  border-radius: inherit;
+}
+.btn-spin:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,107,53,0.5); }
+.btn-spin:active { transform: scale(0.97) translateY(0); }
+.btn-spin:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-spin .spin-icon { font-size: 1.3rem; display: inline-block; }
+.btn-spin.spinning .spin-icon { animation: rotateSpin .4s linear infinite; }
+@keyframes rotateSpin { to { transform: rotate(360deg); } }
+
+/* ── Veto button ── */
+.btn-veto {
+  width: 100%; padding: 11px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text2); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r);
+  font-size: 13px; font-weight: 400;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer; margin-top: 8px;
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-veto:hover { background: rgba(255,255,255,0.09); color: #fff; }
+.btn-veto:active { transform: scale(0.98); }
+.btn-veto.hidden { display: none; }
+
+/* ── Category filters ── */
+.filters {
+  width: 100%; max-width: 400px;
+  margin-top: 1rem;
+  animation: dropIn .7s cubic-bezier(0.34,1.56,0.64,1) .2s both;
+}
+.filter-label {
+  font-size: 11px; font-weight: 300;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text2); margin-bottom: 10px;
+  font-family: 'Sarabun', sans-serif;
+  text-align: center;
+}
+.filter-chips {
+  display: flex; flex-wrap: wrap;
+  gap: 7px; justify-content: center;
+}
+.chip {
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px; font-weight: 500;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer; border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: var(--text2);
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.chip:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+.chip.active {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(255,255,255,0.08);
+}
+
+/* ── History bar ── */
+.history {
+  width: 100%; max-width: 400px;
+  margin-top: 1rem;
+  animation: dropIn .7s cubic-bezier(0.34,1.56,0.64,1) .3s both;
+}
+.history-label {
+  font-size: 11px; font-weight: 300;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text2); margin-bottom: 8px;
+  font-family: 'Sarabun', sans-serif;
+  text-align: center;
+}
+.history-chips {
+  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+}
+.history-chip {
+  padding: 4px 11px; border-radius: 20px;
+  font-size: 12px; font-family: 'Sarabun', sans-serif;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text2);
+  opacity: 0;
+  animation: fadeIn .3s ease forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* ── Confetti ── */
+.confetti-container {
+  position: fixed; inset: 0; z-index: 100;
+  pointer-events: none; overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  width: 10px; height: 10px;
+  top: -10px;
+  animation: confettiFall linear forwards;
+  border-radius: 2px;
+}
+@keyframes confettiFall {
+  0%  { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100%{ transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Footer ── */
+.footer {
+  margin-top: 1.5rem;
+  font-size: 11px; color: rgba(255,255,255,0.18);
+  font-family: 'Sarabun', sans-serif;
+  text-align: center;
+  animation: dropIn .7s .4s both;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Shake animation for veto ── */
+@keyframes shake {
+  0%,100%{ transform: translateX(0); }
+  20%    { transform: translateX(-8px) rotate(-1deg); }
+  40%    { transform: translateX(8px) rotate(1deg); }
+  60%    { transform: translateX(-5px); }
+  80%    { transform: translateX(5px); }
+}
+.shake { animation: shake .4s ease; }
+</style>
+</head>
+<body>
+  <button class="back-btn" onclick="goBack()">
+  ← กลับ
+</button>
+
+<div class="floaters" id="floaters"></div>
+<div class="confetti-container" id="confetti"></div>
+
+<div class="page">
+
+  <div class="header">
+    <span class="header-emoji">🤔</span>
+    <div class="header-sub"></div>
+    <h1>มื้อนี้กินหยังดี?</h1>
+  </div>
+
+  <!-- Slot card -->
+  <div class="slot-card" id="slotCard">
+    <div class="result-area" id="resultArea">
+      <div class="result-bg-glow" id="resultGlow"></div>
+      <div class="reel-overlay" id="reelOverlay">
+        <div class="reel-item" id="reel1">🍜</div>
+        <div class="reel-item" id="reel2">🍕</div>
+        <div class="reel-item" id="reel3">🍱</div>
+      </div>
+      <div id="resultContent">
+        <p class="idle-text">กด SPIN เพื่อตัดสินใจ 🎲</p>
+      </div>
+    </div>
+
+    <div class="btn-area">
+      <button class="btn-spin" id="btnSpin" onclick="spin()">
+        <span class="spin-icon">🎰</span>
+        SPIN — ให้โชคชะตาตัดสิน!
+      </button>
+      <button class="btn-veto hidden" id="btnVeto" onclick="veto()">
+        😤 ไม่เอา! สุ่มใหม่
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-label">ประเภทอาหาร</div>
+    <div class="filter-chips" id="filterChips">
+      <div class="chip active" data-cat="all" onclick="toggleFilter(this)">🌏 ทั้งหมด</div>
+      <div class="chip" data-cat="thai" onclick="toggleFilter(this)">🇹🇭 ไทย</div>
+      <div class="chip" data-cat="japanese" onclick="toggleFilter(this)">🇯🇵 ญี่ปุ่น</div>
+      <div class="chip" data-cat="western" onclick="toggleFilter(this)">🍔 ฝรั่ง</div>
+      <div class="chip" data-cat="chinese" onclick="toggleFilter(this)">🥢 จีน</div>
+      <div class="chip" data-cat="street" onclick="toggleFilter(this)">🛵 สตรีทฟู้ด</div>
+      <div class="chip" data-cat="healthy" onclick="toggleFilter(this)">🥗 เพื่อสุขภาพ</div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="history" id="historySection" style="display:none;">
+    <div class="history-label">สุ่มมาแล้ว</div>
+    <div class="history-chips" id="historyChips"></div>
+  </div>
+
+  <div class="footer">ใช้ตัดสินใจคืนนี้ — ห้ามเถียงกันอีก 😂</div>
+
+</div>
+
+<script>
+const menu = [
+  // Thai
+  { name:'ข้าวมันไก่',    emoji:'🍗', cat:'thai',     color:'#ff9a3c', desc:'อร่อยทุกวันไม่เบื่อ', tags:['ง่าย','ราคาถูก'] },
+  { name:'ผัดไทย',        emoji:'🍜', cat:'thai',     color:'#f4a261', desc:'คลาสสิกไม่มีเอาต์', tags:['ไทยแท้','หาง่าย'] },
+  { name:'ส้มตำ+ไก่ย่าง', emoji:'🌶️', cat:'thai',     color:'#e76f51', desc:'เผ็ดแซ่บ กินแล้วแฮปปี้', tags:['อีสาน','เผ็ด'] },
+  { name:'ต้มยำ',          emoji:'🍲', cat:'thai',     color:'#e63946', desc:'แซ่บนัวสุดๆ', tags:['น้ำซุป','เผ็ด'] },
+  { name:'ข้าวผัดกะเพรา', emoji:'🌿', cat:'thai',     color:'#2a9d8f', desc:'กินได้ทุกวัน ทุกเวลา', tags:['ด่วน','ง่าย'] },
+  { name:'แกงเขียวหวาน',  emoji:'🍛', cat:'thai',     color:'#57cc99', desc:'หอมกะทิ กินกับข้าวสวย', tags:['แกง','ไทย'] },
+  { name:'หมูกระทะ',      emoji:'🥩', cat:'thai',     color:'#bc6c25', desc:'กินด้วยกันสนุก', tags:['ปาร์ตี้','ชวนกัน'] },
+  { name:'ปูผัดผงกะหรี่',  emoji:'🦀', cat:'thai',     color:'#f4a261', desc:'หรูหน่อยแต่คุ้มมาก', tags:['ซีฟู้ด','พิเศษ'] },
+
+  // Japanese
+  { name:'ราเมน',          emoji:'🍥', cat:'japanese', color:'#c77dff', desc:'ร้อนๆ อร่อยซด', tags:['ซุป','ญี่ปุ่น'] },
+  { name:'ซูชิ',           emoji:'🍣', cat:'japanese', color:'#4cc9f0', desc:'เก๋ ดูดี กินกับแฟน', tags:['สด','ญี่ปุ่น'] },
+  { name:'ยากิโทริ',       emoji:'🍢', cat:'japanese', color:'#f77f00', desc:'ปิ้งย่างสไตล์ญี่ปุ่น', tags:['ปิ้งย่าง'] },
+  { name:'ทงคัตสึ',        emoji:'🥩', cat:'japanese', color:'#ffd60a', desc:'หมูทอดชุบแป้ง กรอบโกง', tags:['ทอด','ญี่ปุ่น'] },
+  { name:'ข้าวหน้าเนื้อ',  emoji:'🥢', cat:'japanese', color:'#e9c46a', desc:'ง่าย เร็ว อิ่มแน่', tags:['ด่วน','อิ่ม'] },
+
+  // Western
+  { name:'พิซซ่า',         emoji:'🍕', cat:'western',  color:'#e63946', desc:'สั่งเดลิเวอรี่ง่ายสุด', tags:['เดลิเวอรี่','ชิล'] },
+  { name:'เบอร์เกอร์',     emoji:'🍔', cat:'western',  color:'#f4a261', desc:'junk food วันนี้โอเค', tags:['fast food'] },
+  { name:'พาสต้า',         emoji:'🍝', cat:'western',  color:'#e76f51', desc:'โรแมนติกนิดๆ', tags:['อิตาลี','แฟนชอบ'] },
+  { name:'สเต็ก',          emoji:'🥩', cat:'western',  color:'#bc6c25', desc:'หรูสักวัน ก็ได้นะ', tags:['พิเศษ','แพงหน่อย'] },
+
+  // Chinese
+  { name:'ติ่มซำ',         emoji:'🥟', cat:'chinese',  color:'#f9c74f', desc:'ช้าๆ กินเยอะ', tags:['อาทิตย์','ครอบครัว'] },
+  { name:'ข้าวหมูแดง',     emoji:'🍖', cat:'chinese',  color:'#e63946', desc:'หาง่าย อร่อยเสมอ', tags:['ง่าย','ราคาถูก'] },
+  { name:'หมูสามชั้นพะโล้', emoji:'🍲', cat:'chinese',  color:'#bc6c25', desc:'หอมเครื่องเทศ กินกับไข่', tags:['หม้อ','แซ่บ'] },
+  { name:'เป็ดพะโล้',      emoji:'🦆', cat:'chinese',  color:'#9d4edd', desc:'ต้องหาร้านดีๆ', tags:['พิเศษ','หาร้านก่อน'] },
+
+  // Street food
+  { name:'หมูปิ้ง+ข้าวเหนียว',emoji:'🍡',cat:'street', color:'#f77f00', desc:'ราคาถูก หาง่าย ฟิน', tags:['สตรีท','ถูก'] },
+  { name:'ไก่ทอดข้างทาง',  emoji:'🍗', cat:'street',  color:'#ffd60a', desc:'กรอบนอกนุ่มในสุดคลาสสิก', tags:['ทอด','สตรีท'] },
+  { name:'ผัดซีอิ๊ว',      emoji:'🍜', cat:'street',  color:'#4cc9f0', desc:'เส้นหนาผัดไฟแรง', tags:['เส้น','สตรีท'] },
+  { name:'ข้าวต้ม',         emoji:'🥣', cat:'street',  color:'#80b918', desc:'เบาๆ สบายท้อง', tags:['เบา','ดึก'] },
+  { name:'ชาบู',            emoji:'🫕', cat:'street',  color:'#c77dff', desc:'กินด้วยกันสนุก คุ้มมาก', tags:['บุฟเฟ่ต์','ชวนกัน'] },
+
+  // Healthy
+  { name:'โจ๊กปลา',        emoji:'🐟', cat:'healthy',  color:'#74c69d', desc:'เบา clean กินแล้วดี', tags:['clean','เบา'] },
+  { name:'สลัดทูน่า',      emoji:'🥗', cat:'healthy',  color:'#80b918', desc:'ไม่อ้วน อิ่มนาน', tags:['ไดเอท','สุขภาพ'] },
+  { name:'ข้าวกล้องหมูนึ่ง',emoji:'🥦',cat:'healthy',  color:'#57cc99', desc:'กินดีนะ จริงๆ', tags:['สุขภาพ','ดีต่อร่างกาย'] },
+];
+
+let activeFilters = new Set(['all']);
+let history = [];
+let isSpinning = false;
+
+// Build floating emojis
+const emojiList = ['🍜','🍕','🍣','🥩','🌮','🍔','🥗','🍱','🥟','🍛','🍗','🦀','🥢','🍲'];
+const floaters = document.getElementById('floaters');
+for(let i = 0; i < 18; i++){
+  const d = document.createElement('div');
+  d.className = 'floater';
+  d.textContent = emojiList[i % emojiList.length];
+  d.style.left = (Math.random()*100) + '%';
+  d.style.animationDuration = (12 + Math.random()*20) + 's';
+  d.style.animationDelay = -(Math.random()*25) + 's';
+  d.style.fontSize = (1.2 + Math.random()*1.5) + 'rem';
+  floaters.appendChild(d);
+}
+
+function toggleFilter(el){
+  const cat = el.dataset.cat;
+  const chips = document.querySelectorAll('.chip');
+
+  if(cat === 'all'){
+    activeFilters = new Set(['all']);
+    chips.forEach(c => c.classList.toggle('active', c.dataset.cat === 'all'));
+  } else {
+    activeFilters.delete('all');
+    document.querySelector('[data-cat="all"]').classList.remove('active');
+    if(activeFilters.has(cat)){
+      activeFilters.delete(cat);
+      el.classList.remove('active');
+      if(activeFilters.size === 0){
+        activeFilters.add('all');
+        document.querySelector('[data-cat="all"]').classList.add('active');
+      }
+    } else {
+      activeFilters.add(cat);
+      el.classList.add('active');
+    }
+  }
+}
+
+function getFiltered(){
+  if(activeFilters.has('all')) return menu;
+  return menu.filter(m => activeFilters.has(m.cat));
+}
+
+function spin(){
+  if(isSpinning) return;
+  const pool = getFiltered();
+  if(!pool.length) return;
+
+  isSpinning = true;
+  const btn = document.getElementById('btnSpin');
+  const veto = document.getElementById('btnVeto');
+  btn.disabled = true;
+  btn.classList.add('spinning');
+  btn.innerHTML = '<span class="spin-icon">🎲</span> กำลังสุ่ม...';
+  veto.classList.add('hidden');
+
+  // Show reel effect
+  const reel = document.getElementById('reelOverlay');
+  const reelItems = [document.getElementById('reel1'),document.getElementById('reel2'),document.getElementById('reel3')];
+  document.getElementById('resultContent').style.opacity = '0';
+  reel.classList.add('active');
+
+  let reelCount = 0;
+  const reelInterval = setInterval(() => {
+    reelItems.forEach(r => {
+      r.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
+    });
+    reelCount++;
+  }, 80);
+
+  setTimeout(() => {
+    clearInterval(reelInterval);
+    reel.classList.remove('active');
+
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    showResult(item);
+
+    btn.disabled = false;
+    btn.classList.remove('spinning');
+    btn.innerHTML = '<span class="spin-icon">🎰</span> SPIN อีกรอบ!';
+    veto.classList.remove('hidden');
+    isSpinning = false;
+
+    addHistory(item);
+    shootConfetti(item.color);
+  }, 1200);
+}
+
+function showResult(item){
+  const area = document.getElementById('resultContent');
+  const glow = document.getElementById('resultGlow');
+
+  glow.style.background = `radial-gradient(circle at 50% 50%, ${item.color}22 0%, transparent 70%)`;
+  glow.style.opacity = '1';
+
+  const tagHtml = item.tags.map(t =>
+    `<span class="tag" style="background:${item.color}22;color:${item.color};border:1px solid ${item.color}44">${t}</span>`
+  ).join('');
+
+  area.innerHTML = `
+    <span class="result-emoji-big">${item.emoji}</span>
+    <div class="result-name">${item.name}</div>
+    <div class="result-desc">${item.desc}</div>
+    <div class="result-tags">${tagHtml}</div>
+  `;
+  area.style.opacity = '1';
+  document.getElementById('resultArea').classList.add('spinning');
+  setTimeout(() => document.getElementById('resultArea').classList.remove('spinning'), 600);
+}
+
+function veto(){
+  const card = document.getElementById('slotCard');
+  card.classList.add('shake');
+  setTimeout(() => card.classList.remove('shake'), 400);
+  spin();
+}
+
+function addHistory(item){
+  history.unshift(item);
+  if(history.length > 5) history.pop();
+
+  const sec = document.getElementById('historySection');
+  const chips = document.getElementById('historyChips');
+  sec.style.display = 'block';
+  chips.innerHTML = history.map((h,i) =>
+    `<div class="history-chip" style="animation-delay:${i*0.05}s">${h.emoji} ${h.name}</div>`
+  ).join('');
+}
+
+function shootConfetti(color){
+  const container = document.getElementById('confetti');
+  container.innerHTML = '';
+  const colors = [color, '#ffd93d', '#ff6b9d', '#4ecdc4', '#fff'];
+  for(let i = 0; i < 60; i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${6+Math.random()*8}px;
+      height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-duration:${1.5+Math.random()*1.5}s;
+      animation-delay:${Math.random()*0.4}s;
+    `;
+    container.appendChild(p);
+  }
+  setTimeout(() => container.innerHTML = '', 3500);
+}
+
+function goBack(){
+  if(history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = "index.html";
+  }
+}
+
+</script>
+</body>
+</html>
