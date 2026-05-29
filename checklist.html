@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>เช็คก่อนเดินทาง 🚗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#04020f;
+  --surf:#12102a;
+  --surf2:#1a1735;
+  --surf3:#221f40;
+  --bdr:rgba(255,255,255,0.07);
+  --bdr-m:rgba(255,255,255,0.12);
+  --txt:#f0eeff;
+  --txt2:rgba(240,238,255,0.6);
+  --txt3:rgba(240,238,255,0.3);
+  --purple:#a78bfa;
+  --purple-d:#7c3aed;
+  --purple-l:rgba(167,139,250,0.15);
+  --green:#22c55e;
+  --green-l:rgba(34,197,94,0.15);
+  --red:#f87171;
+  --red-l:rgba(248,113,113,0.12);
+  --orange:#fb923c;
+  --r:14px; --r-sm:9px;
+}
+
+html,body{min-height:100vh;background:var(--bg);font-family:'Prompt',sans-serif;color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* Galaxy bg */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 100% 60% at 20% 0%,rgba(124,58,237,.25) 0%,transparent 60%),
+    radial-gradient(ellipse 80% 50% at 80% 20%,rgba(14,165,233,.15) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 70% at 10% 80%,rgba(200,40,100,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 80%,rgba(29,158,117,.12) 0%,transparent 55%);
+}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(1px 1px at 8% 12%,rgba(255,255,255,.8) 0%,transparent 100%),
+    radial-gradient(1px 1px at 22% 6%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 38% 20%,rgba(255,255,255,.7) 0%,transparent 100%),
+    radial-gradient(1px 1px at 52% 4%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 68% 16%,rgba(255,255,255,.8) 0%,transparent 100%),
+    radial-gradient(1px 1px at 84% 9%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 93% 22%,rgba(255,255,255,.7) 0%,transparent 100%),
+    radial-gradient(1px 1px at 14% 35%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 45% 45%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 72% 38%,rgba(255,255,255,.8) 0%,transparent 100%),
+    radial-gradient(1px 1px at 30% 55%,rgba(180,140,255,.9) 0%,transparent 100%),
+    radial-gradient(1px 1px at 65% 62%,rgba(140,200,255,.8) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 85% 55%,rgba(255,180,100,.7) 0%,transparent 100%),
+    radial-gradient(1px 1px at 18% 72%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 78%,rgba(255,255,255,.7) 0%,transparent 100%),
+    radial-gradient(1px 1px at 78% 85%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(2px 2px at 42% 88%,rgba(180,255,200,.6) 0%,transparent 100%);
+  animation:twinkle 5s ease-in-out infinite alternate;
+}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* Layout */
+.page{position:relative;z-index:1;max-width:500px;margin:0 auto;padding:1.5rem 1rem 5rem;}
+
+/* Back button */
+.back-btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--txt3);text-decoration:none;padding:8px 0;margin-bottom:1rem;transition:color .15s;font-family:'Sarabun',sans-serif;-webkit-tap-highlight-color:transparent;}
+.back-btn:hover{color:var(--purple);}
+.back-btn svg{width:16px;height:16px;}
+
+/* Header */
+.hdr{margin-bottom:1.75rem;animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both;}
+.hdr-tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--txt3);margin-bottom:10px;font-family:'Sarabun',sans-serif;}
+.hdr-dot{width:4px;height:4px;border-radius:50%;background:var(--purple);box-shadow:0 0 6px var(--purple);}
+.hdr h1{font-size:clamp(1.7rem,5vw,2.4rem);font-weight:800;letter-spacing:-.8px;color:var(--txt);line-height:1.1;margin-bottom:6px;}
+.hdr p{font-size:13px;font-weight:300;color:var(--txt3);font-family:'Sarabun',sans-serif;}
+
+/* Progress card */
+.progress-card{background:var(--surf);border:0.5px solid var(--bdr);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem;animation:fadeUp .7s .05s cubic-bezier(.16,1,.3,1) both;}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.progress-title{font-size:13px;font-weight:500;color:var(--txt2);}
+.progress-count{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--txt);}
+.progress-count span{font-size:13px;font-weight:400;color:var(--txt3);margin-left:2px;}
+.progress-bar-bg{height:6px;background:var(--bdr-m);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--purple-d),var(--purple));transition:width .4s cubic-bezier(.16,1,.3,1);}
+.progress-labels{display:flex;justify-content:space-between;margin-top:6px;}
+.progress-label{font-size:11px;color:var(--txt3);font-family:'Sarabun',sans-serif;}
+
+/* Done banner */
+.done-banner{display:none;background:var(--green-l);border:0.5px solid rgba(34,197,94,.25);border-radius:var(--r);padding:14px 16px;margin-bottom:1rem;text-align:center;animation:fadeUp .4s cubic-bezier(.16,1,.3,1) both;}
+.done-banner.show{display:block;}
+.done-banner-emoji{font-size:1.8rem;display:block;margin-bottom:4px;}
+.done-banner-text{font-size:15px;font-weight:700;color:var(--green);margin-bottom:2px;}
+.done-banner-sub{font-size:12px;color:rgba(34,197,94,.7);font-family:'Sarabun',sans-serif;}
+
+/* Add item */
+.add-card{background:var(--surf);border:0.5px solid var(--bdr);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;animation:fadeUp .7s .08s cubic-bezier(.16,1,.3,1) both;}
+.add-row{display:flex;gap:8px;}
+.add-input{flex:1;padding:10px 13px;background:var(--surf2);border:0.5px solid var(--bdr-m);border-radius:var(--r-sm);color:var(--txt);font-size:14px;font-family:'Prompt',sans-serif;outline:none;transition:border-color .15s;}
+.add-input::placeholder{color:var(--txt3);}
+.add-input:focus{border-color:var(--purple);}
+.cat-select{padding:10px 12px;background:var(--surf2);border:0.5px solid var(--bdr-m);border-radius:var(--r-sm);color:var(--txt2);font-size:13px;font-family:'Prompt',sans-serif;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;}
+.add-btn{padding:10px 16px;background:var(--purple-d);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;font-family:'Prompt',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:background .15s;-webkit-tap-highlight-color:transparent;}
+.add-btn:hover{background:#6d28d9;}
+.add-btn:active{transform:scale(.97);}
+
+/* Category section */
+.cat-section{margin-bottom:1rem;animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both;}
+.cat-section:nth-child(3){animation-delay:.1s}
+.cat-section:nth-child(4){animation-delay:.15s}
+.cat-section:nth-child(5){animation-delay:.2s}
+.cat-section:nth-child(6){animation-delay:.25s}
+.cat-section:nth-child(7){animation-delay:.3s}
+
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;}
+.cat-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--txt2);letter-spacing:.3px;}
+.cat-emoji{font-size:16px;}
+.cat-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;font-family:'Sarabun',sans-serif;}
+.cat-badge.done{background:var(--green-l);color:var(--green);}
+.cat-badge.todo{background:var(--purple-l);color:var(--purple);}
+.cat-clear{font-size:11px;color:var(--txt3);background:none;border:none;cursor:pointer;font-family:'Sarabun',sans-serif;padding:2px 6px;border-radius:4px;transition:color .15s;}
+.cat-clear:hover{color:var(--red);}
+
+/* Check items */
+.items-list{display:flex;flex-direction:column;gap:6px;}
+.check-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surf);border:0.5px solid var(--bdr);
+  border-radius:var(--r-sm);padding:11px 14px;
+  transition:all .2s;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.check-item:hover{border-color:var(--bdr-m);background:var(--surf2);}
+.check-item.checked{background:var(--green-l);border-color:rgba(34,197,94,.2);}
+.check-item.checked .item-text{color:rgba(240,238,255,.35);text-decoration:line-through;}
+
+/* Custom checkbox */
+.checkbox{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--bdr-m);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(--surf2);}
+.check-item.checked .checkbox{background:var(--green);border-color:var(--green);}
+.checkbox svg{width:13px;height:13px;opacity:0;transition:opacity .15s;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.check-item.checked .checkbox svg{opacity:1;}
+
+.item-text{flex:1;font-size:14px;font-weight:400;color:var(--txt);transition:color .2s;}
+.item-text .item-note{display:block;font-size:11px;color:var(--txt3);font-weight:300;font-family:'Sarabun',sans-serif;margin-top:1px;}
+
+/* Delete btn */
+.del-btn{width:28px;height:28px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;opacity:0;transition:opacity .15s,background .15s;flex-shrink:0;}
+.check-item:hover .del-btn{opacity:1;}
+.del-btn:hover{background:var(--red-l);}
+.del-btn svg{width:14px;height:14px;stroke:var(--red);stroke-width:2;stroke-linecap:round;}
+
+/* Action buttons */
+.action-row{display:flex;gap:8px;margin-top:1.5rem;}
+.action-btn{flex:1;padding:12px;background:var(--surf);border:0.5px solid var(--bdr-m);border-radius:var(--r-sm);color:var(--txt2);font-size:13px;font-family:'Prompt',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.action-btn:hover{background:var(--surf2);color:var(--txt);}
+.action-btn.danger:hover{border-color:rgba(248,113,113,.3);color:var(--red);}
+
+/* Empty state */
+.empty-state{text-align:center;padding:2rem 1rem;color:var(--txt3);font-size:13px;font-family:'Sarabun',sans-serif;}
+.empty-state-emoji{font-size:2rem;display:block;margin-bottom:8px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.slide-in{animation:slideIn .25s cubic-bezier(.16,1,.3,1) both;}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="page">
+
+  <!-- Back -->
+  <a class="back-btn" href="index.html">
+    <svg fill="none" viewBox="0 0 16 16" stroke="currentColor"><path d="M10 12L6 8l4-4"/></svg>
+    กลับหน้าหลัก
+  </a>
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-tag"><span class="hdr-dot"></span>ก่อนออกเดินทาง<span class="hdr-dot"></span></div>
+    <h1>🚗 เช็คก่อนไป<br>ต่างจังหวัด</h1>
+    <p>ติ๊กรายการที่เตรียมแล้ว เพิ่ม/ลบได้ตามใจ</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-card">
+    <div class="progress-top">
+      <span class="progress-title">ความคืบหน้า</span>
+      <span class="progress-count" id="progressCount">0 <span>/ 0 รายการ</span></span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-labels">
+      <span class="progress-label">เริ่มต้น</span>
+      <span class="progress-label" id="progressPct">0% สำเร็จ</span>
+    </div>
+  </div>
+
+  <!-- Done banner -->
+  <div class="done-banner" id="doneBanner">
+    <span class="done-banner-emoji">🎉</span>
+    <div class="done-banner-text">พร้อมออกเดินทางแล้ว!</div>
+    <div class="done-banner-sub">เช็คครบทุกรายการ ขับรถปลอดภัยนะ</div>
+  </div>
+
+  <!-- Add item -->
+  <div class="add-card">
+    <div class="add-row">
+      <select class="cat-select" id="newCat">
+        <option value="car">🚗 รถ</option>
+        <option value="doc">📄 เอกสาร</option>
+        <option value="bag">🎒 สัมภาระ</option>
+        <option value="med">💊 ยา/สุขภาพ</option>
+        <option value="device">🔌 อุปกรณ์</option>
+        <option value="other">📦 อื่นๆ</option>
+      </select>
+      <input class="add-input" id="newItem" type="text" placeholder="เพิ่มรายการ..." maxlength="50"
+        onkeydown="if(event.key==='Enter')addItem()">
+      <button class="add-btn" onclick="addItem()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+        เพิ่ม
+      </button>
+    </div>
+  </div>
+
+  <!-- Lists rendered here -->
+  <div id="listsContainer"></div>
+
+  <!-- Action buttons -->
+  <div class="action-row">
+    <button class="action-btn" onclick="uncheckAll()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="10" height="10" rx="2"/></svg>
+      ล้างทิ้กทั้งหมด
+    </button>
+    <button class="action-btn danger" onclick="confirmReset()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg>
+      รีเซ็ตทั้งหมด
+    </button>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'doublepChecklist_v2';
+
+const CAT_META = {
+  car:    { label:'รถและการเดินทาง', emoji:'🚗', order:0 },
+  doc:    { label:'เอกสารสำคัญ',     emoji:'📄', order:1 },
+  bag:    { label:'สัมภาระ',          emoji:'🎒', order:2 },
+  med:    { label:'ยา / สุขภาพ',      emoji:'💊', order:3 },
+  device: { label:'อุปกรณ์ไฟฟ้า',    emoji:'🔌', order:4 },
+  other:  { label:'อื่นๆ',            emoji:'📦', order:5 },
+};
+
+const DEFAULTS = [
+  // รถ
+  {id:'c1', cat:'car',    text:'เติมน้ำมัน',           note:'เช็คระดับให้เต็มก่อนออก',    done:false},
+  {id:'c2', cat:'car',    text:'ลมยาง',                note:'ตรวจให้ครบ 4 เส้น + สำรอง', done:false},
+  {id:'c3', cat:'car',    text:'น้ำมันเครื่อง',         note:'',                            done:false},
+  {id:'c4', cat:'car',    text:'น้ำหม้อน้ำ / น้ำกระจก',note:'',                            done:false},
+  {id:'c5', cat:'car',    text:'ไฟหน้า / ไฟท้าย',      note:'',                            done:false},
+  {id:'c6', cat:'car',    text:'ที่แจ็คและประแจยาง',   note:'เผื่อยางแบน',                done:false},
+  // เอกสาร
+  {id:'d1', cat:'doc',    text:'บัตรประชาชน',           note:'',                            done:false},
+  {id:'d2', cat:'doc',    text:'ใบขับขี่',               note:'',                            done:false},
+  {id:'d3', cat:'doc',    text:'เอกสารประกันภัยรถ',    note:'',                            done:false},
+  // สัมภาระ
+  {id:'b1', cat:'bag',    text:'เสื้อผ้า',              note:'นับวันให้ครบ + สำรอง',       done:false},
+  {id:'b2', cat:'bag',    text:'รองเท้า',               note:'',                            done:false},
+  {id:'b3', cat:'bag',    text:'ผ้าขนหนู',              note:'',                            done:false},
+  {id:'b4', cat:'bag',    text:'อุปกรณ์อาบน้ำ',        note:'แปรงสีฟัน ยาสีฟัน',          done:false},
+  {id:'b5', cat:'bag',    text:'หมอน / ผ้าห่ม',        note:'เผื่อเปิดแอร์เย็น',           done:false},
+  // ยา
+  {id:'m1', cat:'med',    text:'ยาแก้ปวด',              note:'พาราเซตามอล',                 done:false},
+  {id:'m2', cat:'med',    text:'ยาแก้ท้องเสีย',         note:'',                            done:false},
+  {id:'m3', cat:'med',    text:'ยาแก้แพ้ / แมลงกัด',  note:'',                            done:false},
+  {id:'m4', cat:'med',    text:'ยาประจำตัว',            note:'ถ้ามี',                       done:false},
+  // อุปกรณ์
+  {id:'e1', cat:'device', text:'สายชาร์จโทรศัพท์',     note:'',                            done:false},
+  {id:'e2', cat:'device', text:'Power bank',            note:'ชาร์จให้เต็มก่อน',            done:false},
+  {id:'e3', cat:'device', text:'หูฟัง',                 note:'เผื่อนั่งยาว',                done:false},
+  {id:'e4', cat:'device', text:'กล้องถ่ายรูป',          note:'ถ้ามี',                       done:false},
+];
+
+let items = [];
+
+function load(){
+  try{
+    const s = localStorage.getItem(STORAGE_KEY);
+    items = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS));
+  }catch(e){ items = JSON.parse(JSON.stringify(DEFAULTS)); }
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+
+function uid(){ return 'u'+Date.now()+Math.random().toString(36).slice(2,6); }
+
+function addItem(){
+  const input = document.getElementById('newItem');
+  const text  = input.value.trim();
+  if(!text) return;
+  const cat = document.getElementById('newCat').value;
+  items.push({ id:uid(), cat, text, note:'', done:false });
+  save();
+  render();
+  input.value = '';
+  input.focus();
+}
+
+function toggle(id){
+  const it = items.find(i=>i.id===id);
+  if(it){ it.done = !it.done; save(); render(); }
+}
+
+function del(id, e){
+  e.stopPropagation();
+  items = items.filter(i=>i.id!==id);
+  save(); render();
+}
+
+function uncheckAll(){
+  items.forEach(i=>i.done=false);
+  save(); render();
+}
+
+function confirmReset(){
+  if(confirm('รีเซ็ตกลับเป็นรายการตั้งต้น?')){
+    items = JSON.parse(JSON.stringify(DEFAULTS));
+    save(); render();
+  }
+}
+
+function render(){
+  const container = document.getElementById('listsContainer');
+  const total = items.length;
+  const done  = items.filter(i=>i.done).length;
+  const pct   = total ? Math.round(done/total*100) : 0;
+
+  document.getElementById('progressCount').innerHTML = `${done} <span>/ ${total} รายการ</span>`;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'% สำเร็จ';
+
+  const banner = document.getElementById('doneBanner');
+  banner.classList.toggle('show', total>0 && done===total);
+
+  // group by cat
+  const cats = Object.keys(CAT_META).sort((a,b)=>CAT_META[a].order-CAT_META[b].order);
+  let html = '';
+  cats.forEach(cat=>{
+    const catItems = items.filter(i=>i.cat===cat);
+    if(!catItems.length) return;
+    const catDone = catItems.filter(i=>i.done).length;
+    const allDone = catDone===catItems.length;
+    const m = CAT_META[cat];
+    html += `
+      <div class="cat-section">
+        <div class="cat-header">
+          <div class="cat-title">
+            <span class="cat-emoji">${m.emoji}</span>
+            ${m.label}
+            <span class="cat-badge ${allDone?'done':'todo'}">${catDone}/${catItems.length}</span>
+          </div>
+          <button class="cat-clear" onclick="clearCat('${cat}')">ล้างหมวด</button>
+        </div>
+        <div class="items-list">
+          ${catItems.map(it=>`
+            <div class="check-item${it.done?' checked':''}" onclick="toggle('${it.id}')">
+              <div class="checkbox">
+                <svg viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3"/></svg>
+              </div>
+              <div class="item-text">
+                ${it.text}
+                ${it.note?`<span class="item-note">${it.note}</span>`:''}
+              </div>
+              <button class="del-btn" onclick="del('${it.id}',event)" title="ลบ">
+                <svg viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12"/></svg>
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  });
+
+  if(!html) html = `<div class="empty-state"><span class="empty-state-emoji">📋</span>ยังไม่มีรายการ<br>เพิ่มรายการด้านบนได้เลย</div>`;
+  container.innerHTML = html;
+}
+
+function clearCat(cat){
+  items.filter(i=>i.cat===cat).forEach(i=>i.done=false);
+  save(); render();
+}
+
+load(); render();
+</script>
+</body>
+</html>

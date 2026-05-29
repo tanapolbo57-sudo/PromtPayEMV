@@ -7,127 +7,41 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --green:#1D9E75; --orange:#ff8c42; }
-html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden; background:#04020f; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--green:#1D9E75;--orange:#ff8c42;}
+html,body{min-height:100vh;font-family:'Prompt',sans-serif;overflow-x:hidden;background:#04020f;}
+.bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-canvas::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 120% 80% at 50% 0%,#1a0545 0%,transparent 55%),radial-gradient(ellipse 80% 60% at 0% 60%,#0d1f5c 0%,transparent 50%),radial-gradient(ellipse 70% 70% at 100% 40%,#2d0a4e 0%,transparent 50%),radial-gradient(ellipse 60% 50% at 50% 100%,#0a1a3a 0%,transparent 55%),linear-gradient(160deg,#04020f 0%,#0c0520 40%,#070218 100%);}
+.nebula{position:absolute;border-radius:50%;filter:blur(70px);mix-blend-mode:screen;animation:nebulaFloat ease-in-out infinite alternate;}
+.neb-1{width:700px;height:500px;background:radial-gradient(ellipse,rgba(120,40,200,.45) 0%,transparent 70%);top:-10%;left:-10%;animation-duration:14s;}
+.neb-2{width:600px;height:600px;background:radial-gradient(ellipse,rgba(20,80,200,.35) 0%,transparent 70%);top:20%;right:-15%;animation-duration:18s;animation-delay:-5s;}
+.neb-3{width:800px;height:400px;background:radial-gradient(ellipse,rgba(200,40,100,.25) 0%,transparent 70%);bottom:0%;left:10%;animation-duration:22s;animation-delay:-8s;}
+.neb-4{width:500px;height:500px;background:radial-gradient(ellipse,rgba(0,180,160,.2) 0%,transparent 70%);top:50%;left:30%;animation-duration:16s;animation-delay:-3s;}
+.neb-5{width:400px;height:400px;background:radial-gradient(ellipse,rgba(255,120,0,.15) 0%,transparent 70%);top:5%;right:25%;animation-duration:20s;animation-delay:-11s;}
+@keyframes nebulaFloat{from{transform:translate(0,0) scale(1) rotate(0deg)}to{transform:translate(30px,40px) scale(1.08) rotate(3deg)}}
+.stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,.9) 0%,transparent 100%),radial-gradient(1px 1px at 25% 8%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 40% 22%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1px 1px at 55% 5%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 70% 18%,rgba(255,255,255,.9) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 85% 10%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 25%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1px 1px at 5% 35%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 20% 42%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(2px 2px at 35% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1px 1px at 60% 48%,rgba(255,255,255,.9) 0%,transparent 100%),radial-gradient(1px 1px at 78% 38%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 88% 52%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1px 1px at 15% 62%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 30% 70%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1px 1px at 48% 75%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 65% 65%,rgba(255,255,255,.9) 0%,transparent 100%),radial-gradient(1px 1px at 80% 72%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 95% 60%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 8% 80%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(1px 1px at 22% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(2px 2px at 42% 92%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 58% 85%,rgba(255,255,255,.9) 0%,transparent 100%),radial-gradient(1px 1px at 75% 90%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 90% 82%,rgba(255,255,255,.8) 0%,transparent 100%),radial-gradient(2px 2px at 33% 30%,rgba(180,140,255,.9) 0%,transparent 100%),radial-gradient(2px 2px at 67% 20%,rgba(140,200,255,.8) 0%,transparent 100%),radial-gradient(2px 2px at 50% 60%,rgba(255,180,100,.7) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 82% 45%,rgba(180,255,200,.8) 0%,transparent 100%),radial-gradient(2px 2px at 18% 55%,rgba(255,140,180,.7) 0%,transparent 100%);animation:twinkle 4s ease-in-out infinite alternate;}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.65}}
+.shooting-star{position:absolute;top:15%;left:-5%;width:3px;height:3px;background:white;border-radius:50%;box-shadow:0 0 6px 2px rgba(255,255,255,.6);animation:shoot 5s ease-in infinite;}
+.shooting-star::after{content:'';position:absolute;top:50%;left:-80px;width:80px;height:1px;background:linear-gradient(to right,transparent,rgba(255,255,255,.6));transform:translateY(-50%);}
+.shooting-star-2{top:35%;animation-delay:2.5s;animation-duration:4s;}
+@keyframes shoot{0%{transform:translate(-50px,0) rotate(-25deg);opacity:0;}5%{opacity:1;}100%{transform:translate(110vw,60vh) rotate(-25deg);opacity:0;}}
+.planet{position:absolute;border-radius:50%;pointer-events:none;}
+.planet-1{width:180px;height:180px;bottom:5%;right:-40px;background:radial-gradient(circle at 35% 35%,#7c3aed 0%,#4c1d95 40%,#1e0a3c 100%);box-shadow:0 0 60px rgba(124,58,237,.4),inset -20px -20px 40px rgba(0,0,0,.5);animation:planetFloat 12s ease-in-out infinite alternate;}
+.planet-1::after{content:'';position:absolute;width:240px;height:40px;background:rgba(255,255,255,.06);border-radius:50%;top:70px;left:-30px;transform:rotate(-20deg);border:1px solid rgba(255,255,255,.08);}
+.planet-2{width:80px;height:80px;top:8%;left:5%;background:radial-gradient(circle at 35% 30%,#0ea5e9 0%,#0369a1 50%,#082f49 100%);box-shadow:0 0 30px rgba(14,165,233,.3);animation:planetFloat 8s ease-in-out infinite alternate-reverse;}
+@keyframes planetFloat{from{transform:translateY(0)}to{transform:translateY(-20px)}}
+.milkyway{position:absolute;width:200%;height:300px;top:30%;left:-50%;background:linear-gradient(transparent 0%,rgba(180,130,255,.04) 30%,rgba(220,180,255,.07) 50%,rgba(180,130,255,.04) 70%,transparent 100%);transform:rotate(-15deg);pointer-events:none;filter:blur(20px);}
 
-/* GALAXY BACKGROUND */
-.bg-canvas { position:fixed; inset:0; z-index:0; overflow:hidden; }
-.bg-canvas::before {
-  content:''; position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 120% 80% at 50% 0%,  #1a0545 0%,transparent 55%),
-    radial-gradient(ellipse 80%  60% at 0%  60%,  #0d1f5c 0%,transparent 50%),
-    radial-gradient(ellipse 70%  70% at 100% 40%, #2d0a4e 0%,transparent 50%),
-    radial-gradient(ellipse 60%  50% at 50% 100%, #0a1a3a 0%,transparent 55%),
-    linear-gradient(160deg,#04020f 0%,#0c0520 40%,#070218 100%);
-}
-.nebula { position:absolute; border-radius:50%; filter:blur(70px); mix-blend-mode:screen; animation:nebulaFloat ease-in-out infinite alternate; }
-.neb-1 { width:700px;height:500px; background:radial-gradient(ellipse,rgba(120,40,200,.45) 0%,transparent 70%); top:-10%;left:-10%; animation-duration:14s; }
-.neb-2 { width:600px;height:600px; background:radial-gradient(ellipse,rgba(20,80,200,.35) 0%,transparent 70%);  top:20%;right:-15%; animation-duration:18s;animation-delay:-5s; }
-.neb-3 { width:800px;height:400px; background:radial-gradient(ellipse,rgba(200,40,100,.25) 0%,transparent 70%); bottom:0%;left:10%;  animation-duration:22s;animation-delay:-8s; }
-.neb-4 { width:500px;height:500px; background:radial-gradient(ellipse,rgba(0,180,160,.2) 0%,transparent 70%);   top:50%;left:30%;    animation-duration:16s;animation-delay:-3s; }
-.neb-5 { width:400px;height:400px; background:radial-gradient(ellipse,rgba(255,120,0,.15) 0%,transparent 70%);  top:5%;right:25%;    animation-duration:20s;animation-delay:-11s; }
-@keyframes nebulaFloat { from{transform:translate(0,0) scale(1) rotate(0deg)} to{transform:translate(30px,40px) scale(1.08) rotate(3deg)} }
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;}
+.header{text-align:center;margin-bottom:3.5rem;animation:fadeUp .9s cubic-bezier(.16,1,.3,1) both;}
+.header-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:400;letter-spacing:3.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:16px;font-family:'DM Sans',sans-serif;}
+.eyebrow-dot{width:4px;height:4px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px #a78bfa;}
+.header h1{font-size:clamp(2.4rem,7vw,3.8rem);font-weight:700;letter-spacing:-2px;color:#fff;line-height:1.05;margin-bottom:12px;}
+.header h1 .accent{background:linear-gradient(135deg,#c4b5fd 0%,#a78bfa 40%,#7c3aed 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header p{font-size:14px;font-weight:300;color:rgba(255,255,255,.35);letter-spacing:.3px;}
 
-.stars {
-  position:absolute; inset:0;
-  background-image:
-    radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,.9) 0%,transparent 100%),
-    radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,.7) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 40% 22%,rgba(255,255,255,.8) 0%,transparent 100%),
-    radial-gradient(1px 1px at 55% 5%, rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 70% 18%,rgba(255,255,255,.9) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 85% 10%,rgba(255,255,255,.7) 0%,transparent 100%),
-    radial-gradient(1px 1px at 92% 25%,rgba(255,255,255,.8) 0%,transparent 100%),
-    radial-gradient(1px 1px at 5%  35%,rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 20% 42%,rgba(255,255,255,.7) 0%,transparent 100%),
-    radial-gradient(2px 2px at 35% 55%,rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 60% 48%,rgba(255,255,255,.9) 0%,transparent 100%),
-    radial-gradient(1px 1px at 78% 38%,rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 88% 52%,rgba(255,255,255,.8) 0%,transparent 100%),
-    radial-gradient(1px 1px at 15% 62%,rgba(255,255,255,.7) 0%,transparent 100%),
-    radial-gradient(1px 1px at 30% 70%,rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 48% 75%,rgba(255,255,255,.8) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 65% 65%,rgba(255,255,255,.9) 0%,transparent 100%),
-    radial-gradient(1px 1px at 80% 72%,rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 95% 60%,rgba(255,255,255,.7) 0%,transparent 100%),
-    radial-gradient(1px 1px at 8%  80%,rgba(255,255,255,.8) 0%,transparent 100%),
-    radial-gradient(1px 1px at 22% 88%,rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(2px 2px at 42% 92%,rgba(255,255,255,.7) 0%,transparent 100%),
-    radial-gradient(1px 1px at 58% 85%,rgba(255,255,255,.9) 0%,transparent 100%),
-    radial-gradient(1px 1px at 75% 90%,rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 90% 82%,rgba(255,255,255,.8) 0%,transparent 100%),
-    radial-gradient(2px 2px at 33% 30%,rgba(180,140,255,.9) 0%,transparent 100%),
-    radial-gradient(2px 2px at 67% 20%,rgba(140,200,255,.8) 0%,transparent 100%),
-    radial-gradient(2px 2px at 50% 60%,rgba(255,180,100,.7) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 82% 45%,rgba(180,255,200,.8) 0%,transparent 100%),
-    radial-gradient(2px 2px at 18% 55%,rgba(255,140,180,.7) 0%,transparent 100%);
-  animation:twinkle 4s ease-in-out infinite alternate;
-}
-@keyframes twinkle { 0%,100%{opacity:1} 50%{opacity:.65} }
-
-.shooting-star {
-  position:absolute; top:15%; left:-5%;
-  width:3px; height:3px; background:white; border-radius:50%;
-  box-shadow:0 0 6px 2px rgba(255,255,255,.6);
-  animation:shoot 5s ease-in infinite;
-}
-.shooting-star::after {
-  content:''; position:absolute; top:50%; left:-80px;
-  width:80px; height:1px;
-  background:linear-gradient(to right,transparent,rgba(255,255,255,.6));
-  transform:translateY(-50%);
-}
-.shooting-star-2 { top:35%; animation-delay:2.5s; animation-duration:4s; }
-@keyframes shoot {
-  0%  { transform:translate(-50px,0) rotate(-25deg);opacity:0; }
-  5%  { opacity:1; }
-  100%{ transform:translate(110vw,60vh) rotate(-25deg);opacity:0; }
-}
-
-.planet { position:absolute; border-radius:50%; pointer-events:none; }
-.planet-1 {
-  width:180px; height:180px; bottom:5%; right:-40px;
-  background:radial-gradient(circle at 35% 35%,#7c3aed 0%,#4c1d95 40%,#1e0a3c 100%);
-  box-shadow:0 0 60px rgba(124,58,237,.4),inset -20px -20px 40px rgba(0,0,0,.5);
-  animation:planetFloat 12s ease-in-out infinite alternate;
-}
-.planet-1::after {
-  content:''; position:absolute;
-  width:240px; height:40px; background:rgba(255,255,255,.06);
-  border-radius:50%; top:70px; left:-30px; transform:rotate(-20deg);
-  border:1px solid rgba(255,255,255,.08);
-}
-.planet-2 {
-  width:80px; height:80px; top:8%; left:5%;
-  background:radial-gradient(circle at 35% 30%,#0ea5e9 0%,#0369a1 50%,#082f49 100%);
-  box-shadow:0 0 30px rgba(14,165,233,.3);
-  animation:planetFloat 8s ease-in-out infinite alternate-reverse;
-}
-@keyframes planetFloat { from{transform:translateY(0)} to{transform:translateY(-20px)} }
-
-.milkyway {
-  position:absolute; width:200%; height:300px; top:30%; left:-50%;
-  background:linear-gradient(transparent 0%,rgba(180,130,255,.04) 30%,rgba(220,180,255,.07) 50%,rgba(180,130,255,.04) 70%,transparent 100%);
-  transform:rotate(-15deg); pointer-events:none; filter:blur(20px);
-}
-
-/* PAGE */
-.page { position:relative;z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:3rem 1.5rem; }
-
-/* HEADER */
-.header { text-align:center; margin-bottom:3.5rem; animation:fadeUp .9s cubic-bezier(.16,1,.3,1) both; }
-.header-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:400; letter-spacing:3.5px; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:16px; font-family:'DM Sans',sans-serif; }
-.eyebrow-dot { width:4px;height:4px;border-radius:50%; background:#a78bfa; box-shadow:0 0 8px #a78bfa; }
-.header h1 { font-size:clamp(2.4rem,7vw,3.8rem); font-weight:700; letter-spacing:-2px; color:#fff; line-height:1.05; margin-bottom:12px; }
-.header h1 .accent { background:linear-gradient(135deg,#c4b5fd 0%,#a78bfa 40%,#7c3aed 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.header p { font-size:14px; font-weight:300; color:rgba(255,255,255,.35); letter-spacing:.3px; }
-
-/* ICON GRID */
-.icon-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:28px; max-width:540px; }
-
-.app-icon-wrap { display:flex; flex-direction:column; align-items:center; gap:10px; animation:fadeUp .8s cubic-bezier(.16,1,.3,1) both; }
+.icon-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;max-width:540px;}
+.app-icon-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) both;}
 .app-icon-wrap:nth-child(1){animation-delay:.10s}
 .app-icon-wrap:nth-child(2){animation-delay:.18s}
 .app-icon-wrap:nth-child(3){animation-delay:.26s}
@@ -135,83 +49,42 @@ html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden
 .app-icon-wrap:nth-child(5){animation-delay:.42s}
 .app-icon-wrap:nth-child(6){animation-delay:.50s}
 
-.app-icon {
-  width:88px; height:88px; border-radius:22px;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; position:relative;
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
-  text-decoration:none; -webkit-tap-highlight-color:transparent;
-  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-}
-.app-icon:hover  { transform:scale(1.13) translateY(-5px); }
-.app-icon:active { transform:scale(.94); transition:transform .08s ease; }
-.app-icon::before { content:''; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(135deg,rgba(255,255,255,.28) 0%,transparent 55%); opacity:0; transition:opacity .2s; }
-.app-icon:hover::before { opacity:1; }
-.app-icon::after  { content:''; position:absolute; inset:0; border-radius:inherit; border:1px solid rgba(255,255,255,.18); pointer-events:none; }
+.app-icon{width:88px;height:88px;border-radius:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;text-decoration:none;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.app-icon:hover{transform:scale(1.13) translateY(-5px);}
+.app-icon:active{transform:scale(.94);transition:transform .08s ease;}
+.app-icon::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.28) 0%,transparent 55%);opacity:0;transition:opacity .2s;}
+.app-icon:hover::before{opacity:1;}
+.app-icon::after{content:'';position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(255,255,255,.18);pointer-events:none;}
+.app-name{font-size:12px;font-weight:400;color:rgba(255,255,255,.65);letter-spacing:.2px;text-align:center;font-family:'Prompt',sans-serif;}
 
-.app-name { font-size:12px; font-weight:400; color:rgba(255,255,255,.65); letter-spacing:.2px; text-align:center; font-family:'Prompt',sans-serif; }
+.icon-promptpay{background:linear-gradient(145deg,#22d48f 0%,#0d8f5f 55%,#064d35 100%);box-shadow:0 8px 32px rgba(29,158,117,.5),0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22);}
+.icon-dinner{background:linear-gradient(145deg,#ffb347 0%,#e8621a 55%,#9b3a0a 100%);box-shadow:0 8px 32px rgba(232,98,26,.5),0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22);}
+.icon-checklist{background:linear-gradient(145deg,#60a5fa 0%,#2563eb 55%,#1e3a8a 100%);box-shadow:0 8px 32px rgba(37,99,235,.5),0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22);}
+.icon-placeholder{background:linear-gradient(145deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.03) 100%);box-shadow:0 4px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);border:1px dashed rgba(255,255,255,.1) !important;cursor:default;}
+.icon-placeholder::before{display:none;}
+.icon-placeholder:hover{transform:none;}
+.icon-placeholder .icon-svg{opacity:.2;}
+.icon-svg{width:44px;height:44px;flex-shrink:0;}
+.app-icon-wrap.coming .app-name{color:rgba(255,255,255,.25);font-style:italic;font-size:11px;}
 
-/* Icon colours */
-.icon-promptpay {
-  background:linear-gradient(145deg,#22d48f 0%,#0d8f5f 55%,#064d35 100%);
-  box-shadow:0 8px 32px rgba(29,158,117,.5),0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22);
-}
-.icon-dinner {
-  background:linear-gradient(145deg,#ffb347 0%,#e8621a 55%,#9b3a0a 100%);
-  box-shadow:0 8px 32px rgba(232,98,26,.5),0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22);
-}
-.icon-placeholder {
-  background:linear-gradient(145deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.03) 100%);
-  box-shadow:0 4px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06);
-  border:1px dashed rgba(255,255,255,.1) !important;
-  cursor:default;
-}
-.icon-placeholder::before { display:none; }
-.icon-placeholder:hover { transform:none; }
-.icon-placeholder .icon-svg { opacity:.2; }
-.icon-svg { width:44px; height:44px; flex-shrink:0; }
-.app-icon-wrap.coming .app-name { color:rgba(255,255,255,.25); font-style:italic; font-size:11px; }
-
-.footer { margin-top:4rem; font-size:11px; color:rgba(255,255,255,.15); letter-spacing:.5px; text-align:center; font-family:'DM Sans',sans-serif; animation:fadeUp .8s .6s both; }
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
-
-@media(max-width:480px){
-  .icon-grid{gap:18px;max-width:320px}
-  .app-icon{width:74px;height:74px;border-radius:18px}
-  .icon-svg{width:36px;height:36px}
-  .header{margin-bottom:2.5rem}
-  .planet-1{width:120px;height:120px;right:-30px}
-  .planet-2{width:55px;height:55px}
-}
+.footer{margin-top:4rem;font-size:11px;color:rgba(255,255,255,.15);letter-spacing:.5px;text-align:center;font-family:'DM Sans',sans-serif;animation:fadeUp .8s .6s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@media(max-width:480px){.icon-grid{gap:18px;max-width:320px}.app-icon{width:74px;height:74px;border-radius:18px}.icon-svg{width:36px;height:36px}.header{margin-bottom:2.5rem}.planet-1{width:120px;height:120px;right:-30px}.planet-2{width:55px;height:55px}}
 </style>
 </head>
 <body>
-
 <div class="bg-canvas">
-  <div class="nebula neb-1"></div>
-  <div class="nebula neb-2"></div>
-  <div class="nebula neb-3"></div>
-  <div class="nebula neb-4"></div>
-  <div class="nebula neb-5"></div>
-  <div class="stars"></div>
-  <div class="milkyway"></div>
-  <div class="shooting-star"></div>
-  <div class="shooting-star shooting-star-2"></div>
-  <div class="planet planet-1"></div>
-  <div class="planet planet-2"></div>
+  <div class="nebula neb-1"></div><div class="nebula neb-2"></div><div class="nebula neb-3"></div>
+  <div class="nebula neb-4"></div><div class="nebula neb-5"></div>
+  <div class="stars"></div><div class="milkyway"></div>
+  <div class="shooting-star"></div><div class="shooting-star shooting-star-2"></div>
+  <div class="planet planet-1"></div><div class="planet planet-2"></div>
 </div>
 
 <div class="page">
-
   <div class="header">
-    <div class="header-eyebrow">
-      <span class="eyebrow-dot"></span>
-      DoubleP · Developer
-      <span class="eyebrow-dot"></span>
-    </div>
-    <h1>Double<span class="accent">P Hub</span></h1>
-    <p>เลือกบริการที่ต้องการใช้งาน</p>
+    <div class="header-eyebrow"><span class="eyebrow-dot"></span>Developer<span class="eyebrow-dot"></span></div>
+    <h1>PROJECT<span class="accent">XP</span></h1>
   </div>
 
   <div class="icon-grid">
@@ -220,12 +93,12 @@ html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden
     <div class="app-icon-wrap">
       <a class="app-icon icon-promptpay" href="Payment.html">
         <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
-          <rect x="6"   y="6"   width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
-          <rect x="9.5" y="9.5" width="6"  height="6"  rx="1"   fill="white"/>
-          <rect x="25"  y="6"   width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
-          <rect x="28.5" y="9.5" width="6" height="6"  rx="1"   fill="white"/>
-          <rect x="6"   y="25"  width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
-          <rect x="9.5" y="28.5" width="6" height="6"  rx="1"   fill="white"/>
+          <rect x="6" y="6" width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
+          <rect x="9.5" y="9.5" width="6" height="6" rx="1" fill="white"/>
+          <rect x="25" y="6" width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
+          <rect x="28.5" y="9.5" width="6" height="6" rx="1" fill="white"/>
+          <rect x="6" y="25" width="13" height="13" rx="2.5" stroke="white" stroke-width="2.2" fill="none"/>
+          <rect x="9.5" y="28.5" width="6" height="6" rx="1" fill="white"/>
           <rect x="25" y="25" width="3" height="3" rx=".6" fill="white"/>
           <rect x="30" y="25" width="3" height="3" rx=".6" fill="white"/>
           <rect x="35" y="25" width="3" height="3" rx=".6" fill="white"/>
@@ -238,17 +111,17 @@ html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden
       <span class="app-name">PromptPay</span>
     </div>
 
-    <!-- 2. Dinner Randomizer -->
+    <!-- 2. Dinner -->
     <div class="app-icon-wrap">
       <a class="app-icon icon-dinner" href="Dinner.html">
         <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
           <circle cx="22" cy="25" r="12" stroke="white" stroke-width="2" fill="none" opacity=".9"/>
-          <circle cx="22" cy="25" r="7"  stroke="white" stroke-width="1.4" fill="none" opacity=".45"/>
-          <line x1="10" y1="8" x2="10" y2="17" stroke="white" stroke-width="2"   stroke-linecap="round"/>
-          <line x1="8"  y1="8" x2="8"  y2="13" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="22" cy="25" r="7" stroke="white" stroke-width="1.4" fill="none" opacity=".45"/>
+          <line x1="10" y1="8" x2="10" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line x1="8" y1="8" x2="8" y2="13" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           <line x1="12" y1="8" x2="12" y2="13" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="10" y1="17" x2="10" y2="22" stroke="white" stroke-width="2"  stroke-linecap="round"/>
-          <line x1="34" y1="8"  x2="34" y2="22" stroke="white" stroke-width="2"  stroke-linecap="round"/>
+          <line x1="10" y1="17" x2="10" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line x1="34" y1="8" x2="34" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
           <path d="M34 8 Q38 12 37 17 L34 17" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
           <circle cx="19" cy="23" r="1.3" fill="white" opacity=".85"/>
           <circle cx="23" cy="26" r="1.3" fill="white" opacity=".85"/>
@@ -258,13 +131,33 @@ html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden
       <span class="app-name">มื้อนี้กินหยังดี</span>
     </div>
 
-    <!-- 3–6 placeholders -->
+    <!-- 3. Checklist -->
+    <div class="app-icon-wrap">
+      <a class="app-icon icon-checklist" href="checklist.html">
+        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
+          <!-- clipboard body -->
+          <rect x="9" y="10" width="26" height="30" rx="3.5" stroke="white" stroke-width="2" fill="none" opacity=".9"/>
+          <!-- clip top -->
+          <rect x="16" y="7" width="12" height="7" rx="2" stroke="white" stroke-width="1.8" fill="none"/>
+          <!-- check rows -->
+          <polyline points="14,20 16.5,22.5 20,18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="23" y1="20.5" x2="32" y2="20.5" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+          <polyline points="14,28 16.5,30.5 20,26" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="23" y1="28.5" x2="32" y2="28.5" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+          <!-- last row partial (coming item) -->
+          <rect x="13.5" y="34" width="5" height="5" rx="1.2" stroke="white" stroke-width="1.5" fill="none" opacity=".4"/>
+          <line x1="23" y1="36.5" x2="29" y2="36.5" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".3"/>
+        </svg>
+      </a>
+      <span class="app-name">เช็คก่อนเดินทาง</span>
+    </div>
+
+    <!-- 4–6 placeholders -->
     <div class="app-icon-wrap coming">
       <div class="app-icon icon-placeholder">
         <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
-          <rect x="10" y="10" width="24" height="18" rx="3" stroke="white" stroke-width="2"/>
-          <path d="M14 32h16M18 28v4M26 28v4" stroke="white" stroke-width="2" stroke-linecap="round"/>
-          <path d="M15 16h4M15 20h10" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+          <circle cx="22" cy="22" r="10" stroke="white" stroke-width="2"/>
+          <path d="M16 22h12M22 16v12" stroke="white" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
       <span class="app-name">coming soon</span>
@@ -283,19 +176,6 @@ html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden
     <div class="app-icon-wrap coming">
       <div class="app-icon icon-placeholder">
         <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
-          <rect x="9" y="14" width="26" height="18" rx="3" stroke="white" stroke-width="2"/>
-          <path d="M9 19h26" stroke="white" stroke-width="1.8"/>
-          <path d="M14 25h4M14 29h8" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-          <rect x="16" y="9" width="3" height="6" rx="1.5" fill="white" opacity=".5"/>
-          <rect x="25" y="9" width="3" height="6" rx="1.5" fill="white" opacity=".5"/>
-        </svg>
-      </div>
-      <span class="app-name">coming soon</span>
-    </div>
-
-    <div class="app-icon-wrap coming">
-      <div class="app-icon icon-placeholder">
-        <svg class="icon-svg" viewBox="0 0 44 44" fill="none">
           <circle cx="22" cy="22" r="12" stroke="white" stroke-width="2"/>
           <path d="M22 15v7l4 4" stroke="white" stroke-width="2" stroke-linecap="round"/>
           <circle cx="22" cy="22" r="1.5" fill="white"/>
@@ -306,8 +186,7 @@ html,body { min-height:100vh; font-family:'Prompt',sans-serif; overflow-x:hidden
 
   </div>
 
-  <div class="footer">DoublePHub &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; ✦ made with ♥</div>
-
+  <div class="footer">♥PROJECT X P &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; ♥</div>
 </div>
 </body>
 </html>
